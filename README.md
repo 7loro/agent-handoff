@@ -19,6 +19,19 @@ Fast **recent-session handoff** across local coding agents.
 > Not a full-history semantic search tool.  
 > This tool optimizes for: *“context filled up — continue in another agent now.”*
 
+## Purpose and philosophy
+
+`ahandoff` exists for **continuity, not retrieval**. Its job is to carry the work you are doing now into another coding agent when a context or token limit interrupts you. In that moment, the useful session is almost always one of the most recent ones—not an arbitrary conversation from months ago.
+
+Limiting discovery to a recent window is therefore an intentional product boundary, not a missing search feature:
+
+1. **Recent over exhaustive** — show the small set of sessions that are plausible handoff candidates.
+2. **Fast and predictable over complete** — prune old files by mtime instead of indexing an entire history.
+3. **Metadata before content** — keep listing lightweight; read full turns only after the user chooses a session to hop.
+4. **One job, done well** — full-history indexing, semantic recall, and archival search belong to tools designed for finding past work.
+
+`--days` and `AH_DAYS` let you match the recent window to your own workflow. They are not intended to turn `ahandoff` into an all-history search engine. If you need to rediscover older work, use a history-search tool; if you need to continue what you were just doing, use `ahandoff`.
+
 ## vs [agent-hop](https://github.com/hetpatel-11/agent-hop)
 
 [agent-hop](https://github.com/hetpatel-11/agent-hop) is the broader tool: **search your entire local agent history** (hybrid / semantic search, embeddings, fuzzy match) and resume or convert any session. Great when you remember the *topic* but not which tool or folder held the chat.
