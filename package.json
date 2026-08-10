@@ -1,0 +1,41 @@
+{
+  "name": "ahandoff",
+  "version": "0.1.0",
+  "description": "Fast recent-session handoff across Claude, Codex, Grok, and Gemini.",
+  "type": "module",
+  "bin": {
+    "ahf": "dist/cli.js",
+    "ahandoff": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.ko.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p . && chmod +x dist/cli.js",
+    "dev": "tsx src/cli.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ai-agents",
+    "coding-agents",
+    "handoff",
+    "claude-code",
+    "codex",
+    "grok",
+    "gemini",
+    "cli"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@clack/prompts": "^1.7.0",
+    "commander": "^14.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
