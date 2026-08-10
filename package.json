@@ -28,7 +28,19 @@
     "gemini",
     "cli"
   ],
+  "author": "Casper <nowfeel88@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/7loro/agent-handoff.git"
+  },
+  "homepage": "https://github.com/7loro/agent-handoff#readme",
+  "bugs": {
+    "url": "https://github.com/7loro/agent-handoff/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@clack/prompts": "^1.7.0",
     "commander": "^14.0.1"
