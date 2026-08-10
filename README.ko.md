@@ -2,11 +2,14 @@
 
 **Language:** [English](README.md) · [한국어](README.ko.md)
 
+[![npm](https://img.shields.io/npm/v/ahandoff.svg)](https://www.npmjs.com/package/ahandoff)
+[![npm](https://img.shields.io/npm/dt/ahandoff.svg)](https://www.npmjs.com/package/ahandoff)
+
 ![ahandoff 세션 피커](assets/capture.png)
 
 로컬 코딩 에이전트 간 **최근 세션 빠른 핸드오프**.
 
-- **패키지:** `ahandoff`
+- **npm:** [ahandoff](https://www.npmjs.com/package/ahandoff)
 - **명령:** `ahf` (별칭: `ahandoff`)
 - **에이전트:** Claude Code, Codex, Grok Build, Gemini CLI
 - **기본 기간:** 최근 **7일** (`--days` / `AH_DAYS`로 조절)
@@ -48,15 +51,41 @@
 
 ## 설치
 
+**npm 패키지:** [https://www.npmjs.com/package/ahandoff](https://www.npmjs.com/package/ahandoff)
+
+### 글로벌 설치 (권장)
+
 ```bash
-# 이 저장소에서
+npm install -g ahandoff
+
+# 설치 후 두 이름 모두 사용 가능
+ahf --help
+ahandoff --help
+```
+
+**Node.js ≥ 18** 이 필요합니다.
+
+### `npx`로 한 번 실행 (설치 없이)
+
+```bash
+npx ahandoff
+npx ahandoff list
+npx ahandoff --mock
+npx ahandoff hop -f claude -t codex --latest
+```
+
+`npx`는 첫 실행 시 패키지를 받아 `ahandoff` CLI를 실행합니다. 글로벌 설치 없이 써 볼 때 적합합니다.
+
+### 이 저장소에서 (개발)
+
+```bash
+# 의존성 설치, 빌드, 글로벌 연결
+npm install
+npm run build
 npm install -g .
 
 # 개발 중 링크
 npm run build && npm link
-
-# 배포 후
-npm install -g ahandoff
 ```
 
 ## 목 데이터 데모
@@ -64,9 +93,15 @@ npm install -g ahandoff
 실제 에이전트 세션을 스캔하지 않고 피커를 실행합니다.
 
 ```bash
+# 글로벌 설치 후
 ahf --mock
 # 또는
 AH_MOCK=1 ahf
+
+# npx
+npx ahandoff --mock
+
+# 이 저장소에서
 just mock
 ```
 
@@ -75,18 +110,26 @@ just mock
 ```bash
 # 인터랙티브 세션 목록 (vim 스타일 피커)
 ahf
+# 동일:
+ahandoff
+npx ahandoff
+
 ahf list
+npx ahandoff list
 
 # 머신에 맞는 days 임계값 측정
 ahf bench --days 1,3,7,14
 
 # 최신 Claude 세션 → Codex 핸드오프
 ahf hop -f claude -t codex --latest
+npx ahandoff hop -f claude -t codex --latest
 
 # 인터랙티브로 고른 뒤 hop
 ahf hop -f claude -t grok
 ahf "oauth" -r codex
 ```
+
+글로벌 설치 후에는 `ahf`와 `ahandoff`가 동일합니다. `npx`를 쓸 때는 패키지 이름으로 `npx ahandoff …` 형태를 사용하세요.
 
 ### 피커 키 (vim 친화)
 

@@ -2,11 +2,14 @@
 
 **Language:** [English](README.md) · [한국어](README.ko.md)
 
+[![npm](https://img.shields.io/npm/v/ahandoff.svg)](https://www.npmjs.com/package/ahandoff)
+[![npm](https://img.shields.io/npm/dt/ahandoff.svg)](https://www.npmjs.com/package/ahandoff)
+
 ![ahandoff session picker](assets/capture.png)
 
 Fast **recent-session handoff** across local coding agents.
 
-- **Package:** `ahandoff`
+- **npm:** [ahandoff](https://www.npmjs.com/package/ahandoff)
 - **Command:** `ahf` (alias: `ahandoff`)
 - **Agents:** Claude Code, Codex, Grok Build, Gemini CLI
 - **Default window:** last **7 days** (tune with `--days` / `AH_DAYS`)
@@ -48,15 +51,41 @@ Use **agent-hop** when you need deep historical search. Use **ahandoff** when th
 
 ## Install
 
+**Package on npm:** [https://www.npmjs.com/package/ahandoff](https://www.npmjs.com/package/ahandoff)
+
+### Global install (recommended)
+
 ```bash
-# from this repo
+npm install -g ahandoff
+
+# then use either binary name
+ahf --help
+ahandoff --help
+```
+
+Requires **Node.js ≥ 18**.
+
+### One-off with `npx` (no install)
+
+```bash
+npx ahandoff
+npx ahandoff list
+npx ahandoff --mock
+npx ahandoff hop -f claude -t codex --latest
+```
+
+`npx` downloads the package on first run and executes the `ahandoff` CLI. Good for trying the tool without a global install.
+
+### From this repo (development)
+
+```bash
+# install deps, build, and link globally
+npm install
+npm run build
 npm install -g .
 
-# or link while developing
+# or link while iterating
 npm run build && npm link
-
-# after publish
-npm install -g ahandoff
 ```
 
 ## Demo with mock data
@@ -64,9 +93,15 @@ npm install -g ahandoff
 Run the picker without scanning real agent sessions:
 
 ```bash
+# after global install
 ahf --mock
 # or
 AH_MOCK=1 ahf
+
+# with npx
+npx ahandoff --mock
+
+# from this repo
 just mock
 ```
 
@@ -75,18 +110,26 @@ just mock
 ```bash
 # interactive session list (vim-style picker)
 ahf
+# same as:
+ahandoff
+npx ahandoff
+
 ahf list
+npx ahandoff list
 
 # calibrate days threshold for your machine
 ahf bench --days 1,3,7,14
 
 # handoff latest Claude session → Codex
 ahf hop -f claude -t codex --latest
+npx ahandoff hop -f claude -t codex --latest
 
 # pick interactively then hop
 ahf hop -f claude -t grok
 ahf "oauth" -r codex
 ```
+
+After a global install, `ahf` and `ahandoff` are equivalent. With `npx`, use the package name: `npx ahandoff …`.
 
 ### Picker keys (vim-friendly)
 

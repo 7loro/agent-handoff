@@ -32,7 +32,7 @@ function daysAgo(d: number): number {
  * `opts.cwd` 를 현재 폴더 경로로 써서 [cwd] 배지가 실제로 보이게 한다.
  */
 export function buildMockSessions(cwd: string): SessionMeta[] {
-  const otherA = "/Users/demo/Workspace/piccoma-app";
+  const otherA = "/Users/demo/Workspace/sample-app";
   const otherB = "/Users/demo/Workspace/infra-tools";
   const otherC = "/Users/demo/Projects/side/oauth-lab";
 
