@@ -36,7 +36,7 @@ CLI 진입점 `src/cli.ts`(commander)에 서브커맨드 4개: `pick`(기본 —
 각 어댑터는 해당 CLI의 로컬 세션 저장소를 직접 읽는다 — Claude는 `~/.claude/projects/**/*.jsonl`,
 Codex는 `YYYY/MM/DD` 디렉토리로 프루닝, Grok은 `summary.json`만으로 목록 구성.
 
-**hop 흐름** (`src/cli.ts`의 `hopSession`): 소스 `read` → `trimTurnsToBudget`(예산 초과 시 오래된 턴 드랍) →
+**hop 흐름** (`src/cli.ts`의 `hopSession`): 소스 `read` → `trimTurnsToBudget`(예산 초과 시 오래된 턴 드랍, 마지막 턴은 잘라서라도 유지) →
 대상 `write` → `resumeCmd`를 execve(가능하면) 또는 spawn으로 실행. 소스=대상이면 변환 없이 네이티브 resume.
 
 **피커** (`src/picker.ts`): 직접 구현한 vim 스타일 TUI (j/k, g/G, Tab 에이전트 필터, `/` 검색, 한글 키 레이아웃 대응).

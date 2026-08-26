@@ -65,16 +65,21 @@ async function hopSession(
       console.error("No readable turns.");
       process.exit(1);
     }
-    const { turns, droppedCount } = trimTurnsToBudget(allTurns);
+    const { turns, droppedCount, shrunk } = trimTurnsToBudget(allTurns);
+    if (turns.length === 0) {
+      console.error("No readable turns after budget trim.");
+      process.exit(1);
+    }
     sessionId = await dest.write(turns, projectPath);
     const convert_ms = Math.round(performance.now() - t0);
     console.error(
       `AH_CONVERT convert_ms=${convert_ms} turns=${turns.length} dropped=${droppedCount} ` +
-        `from=${picked.tool} to=${target} sessionId=${sessionId}`
+        `shrunk=${shrunk ? 1 : 0} from=${picked.tool} to=${target} sessionId=${sessionId}`
     );
     console.error(
       `converted ${turns.length}/${allTurns.length} turns in ${convert_ms}ms` +
-        (droppedCount ? ` (dropped oldest ${droppedCount})` : "")
+        (droppedCount ? ` (dropped oldest ${droppedCount})` : "") +
+        (shrunk ? " (truncated to fit budget)" : "")
     );
   }
 

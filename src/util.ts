@@ -165,21 +165,112 @@ function turnCharCount(t: Turn): number {
   return n;
 }
 
+function turnsCharCount(turns: Turn[]): number {
+  let n = 0;
+  for (const t of turns) n += turnCharCount(t);
+  return n;
+}
+
+function cloneTurn(t: Turn): Turn {
+  return {
+    ...t,
+    toolCalls: t.toolCalls?.map((tc) => ({ ...tc })),
+    attachments: t.attachments?.map((a) => ({ ...a })),
+  };
+}
+
+/** 예산 안으로 줄이기 — 도구 출력 → 오래된 도구 호출 → 본문 순. */
+function shrinkTurns(turns: Turn[], budget: number): Turn[] {
+  const out = turns.map(cloneTurn);
+  const over = () => turnsCharCount(out) > budget;
+
+  // exec 입력은 명령 자체라 너무 짧게 자르지 않는다
+  for (const t of out) {
+    for (const tc of t.toolCalls ?? []) {
+      if (tc.input.length > 4000) tc.input = truncate(tc.input, 4000);
+    }
+  }
+
+  for (const cap of [1500, 600, 200, 80]) {
+    if (!over()) return out;
+    for (const t of out) {
+      for (const tc of t.toolCalls ?? []) {
+        if (tc.output && tc.output.length > cap) tc.output = truncate(tc.output, cap);
+      }
+    }
+  }
+
+  for (const t of out) {
+    if (!over()) break;
+    const calls = t.toolCalls;
+    if (!calls?.length) continue;
+    while (calls.length > 0 && over()) calls.shift();
+    if (calls.length === 0) t.toolCalls = undefined;
+  }
+
+  // 어시스턴트 본문은 앞부분을 버리고 최근 결론을 남긴다
+  if (over()) {
+    const prefix = "…(earlier truncated)\n";
+    for (const t of out) {
+      if (!over()) break;
+      if (t.role !== "assistant" || t.text.length <= 80) continue;
+      const overflow = turnsCharCount(out) - budget;
+      const cut = Math.min(overflow + prefix.length, t.text.length - 80);
+      if (cut <= 0) continue;
+      t.text = prefix + t.text.slice(cut);
+    }
+  }
+
+  if (over()) {
+    for (const t of out) {
+      if (!over()) break;
+      if (t.text.length <= 80) continue;
+      const keep = Math.max(80, t.text.length - (turnsCharCount(out) - budget));
+      t.text = truncate(t.text, keep);
+    }
+  }
+
+  return out;
+}
+
+/**
+ * 변환 예산을 넘는 오래된 턴을 버린다.
+ * 마지막 턴만으로도 예산을 넘으면 버리지 않고 내용을 잘라 반드시 1턴 이상 남긴다.
+ */
 export function trimTurnsToBudget(
   turns: Turn[],
   budget = CONVERSION_CHAR_BUDGET
-): { turns: Turn[]; droppedCount: number } {
+): { turns: Turn[]; droppedCount: number; shrunk: boolean } {
+  if (turns.length === 0) return { turns: [], droppedCount: 0, shrunk: false };
+
   let total = 0;
   let cutIndex = turns.length;
   for (let i = turns.length - 1; i >= 0; i--) {
-    total += turnCharCount(turns[i]);
-    if (total > budget) {
+    const n = turnCharCount(turns[i]!);
+    // 이미 꼬리 턴을 확보한 뒤에만 예산 초과로 자를 수 있다
+    if (i < turns.length - 1 && total + n > budget) {
       cutIndex = i + 1;
       break;
     }
+    total += n;
     cutIndex = i;
+    if (total > budget) break;
   }
-  return { turns: turns.slice(cutIndex), droppedCount: cutIndex };
+
+  // 잘린 맨 앞이 assistant면 직전 user를 붙여 질문-답 쌍을 유지
+  if (
+    cutIndex > 0 &&
+    turns[cutIndex]?.role === "assistant" &&
+    turns[cutIndex - 1]?.role === "user"
+  ) {
+    cutIndex -= 1;
+  }
+
+  const droppedCount = cutIndex;
+  let kept = turns.slice(cutIndex);
+  const shrunk = turnsCharCount(kept) > budget;
+  if (shrunk) kept = shrinkTurns(kept, budget);
+  return { turns: kept, droppedCount, shrunk };
 }
 
 export function sameProject(a: string, b: string): boolean {
